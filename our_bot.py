@@ -87,8 +87,8 @@ class OxyCSBot(ChatBot):
         # 'death penalty' : 'death Penalty'
         'Capital punishment' : 'capital punishment',
         'capital punishment' : 'capital punishment',
-        'Death penalty' : 'death Penalty',
-        'death penalty' : 'death Penalty'
+        'Death penalty' : 'death penalty',
+        'death penalty' : 'death penalty'
 
     }
 
@@ -103,7 +103,8 @@ class OxyCSBot(ChatBot):
         been identified.
         """
         super().__init__(default_state='waiting')
-        #self.professor = None
+        self.agreeCounter = 0
+        self.disagreeCounter = 0
 
     #function used to clean up code -- called by every function when responding
     def determineNextState(self, message, tags):
@@ -132,23 +133,11 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        # self.professor = None
-        # if 'office-hours' in tags:
-        #     for professor in self.PROFESSORS:
-        #         if professor in tags:
-        #             self.professor = professor
-        #             return self.go_to_state('specific_faculty')
-        #     return self.go_to_state('unknown_faculty')
-        # elif 'thanks' in tags:
-        #     return self.finish('thanks')
-        # else:
-        #     return self.finish('confused')
-
         if 'greeting' in tags:
             return self.go_to_state('main_question')
         elif 'capital punishment' in tags or 'death penalty' in tags and 'hello' not in tags:
             if indicoio.sentiment(message) >= .5:
-                return self.go_to_state('pose_topic')
+                return self.go_to_state('pose_topic') ############## cant pose topic yet--not a function!
             elif indicoio.sentiment(message) < .5:
                 return self.finish('agree')
         else:
