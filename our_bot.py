@@ -93,8 +93,6 @@ class OxyCSBot(ChatBot):
     }
 
     argumentsList = ['cheaper_argument', 'more_humane_argument', 'dissuades_people_argument', 'eye_for_eye_argument', 'deserves_worst_fate_argument', 'cant_contribute_argument', 'wont_change_argument']
-    agreeCounter = 0
-    disagreeCounter = 0
 
     def __init__(self):
         """Initialize the OxyCSBot.
@@ -196,11 +194,6 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        # for professor in self.PROFESSORS:
-        #     if professor in tags:
-        #         self.professor = professor
-        #         return self.go_to_state('specific_faculty')
-        # return self.go_to_state('unrecognized_faculty')
         
         ####TODO add if statement that checks if argument counter has reached three to prevent circular arguments
 
