@@ -15,43 +15,43 @@ class OxyCSBot(ChatBot):
 
     TAGS = {
         # cheaper argument
-        'cheap' : 'cheap',
-        'cost' : 'cost',
-        'price' : 'price',
+        'cheap' : 'cheaper',
+        'cost' : 'cheaper',
+        'price' : 'cheaper',
         'cheaper' : 'cheaper',
 
         #more humane argument
         'humane' : 'humane',
-        'not right' : 'not right',
-        'unjust' : 'unjust',
-        'civil' : 'civil',
+        'not right' : 'humane',
+        'unjust' : 'humane',
+        'civil' : 'humane',
 
         #dissuades people argument
         'dissuade' : 'dissuade' ,
-        'dissuades' : 'dissuades',
-        'deter' : 'deter',
-        'deters' : 'deters',
+        'dissuades' : 'dissuade',
+        'deter' : 'dissuade',
+        'deters' : 'dissuade',
 
         #eye for eye/justice argument
-        'justice' : 'justice',
-        'karma' : 'karma',
-        'legal' : 'legal',
-        'fair' : 'fair',
+        'justice' : 'eye for eye',
+        'karma' : 'eye for eye',
+        'legal' : 'eye for eye',
+        'fair' : 'eye for eye',
         'eye for eye' : 'eye for eye',
 
         #why keep alive? Argument
-        'contribute' : 'contribute',
-        'alive' : 'alive',
+        'contribute' : 'cant contribute',
+        'alive' : 'cant contribute',
 
         #deserve worst fate possible argument
-        'deserve' : 'deserve',
-        'deserves' : 'deserves',
-        'worst fate' : 'worst fate',
-        'suffer' : 'suffer',
+        'deserve' : 'deserves worst fate',
+        'deserves' : 'deserves worst fate',
+        'worst fate' : 'deserves worst fate',
+        'suffer' : 'deserves worst fate',
 
         #people are inherently bad/won't change argument
-        'change' : 'change',
-        'inherently bad' : 'inherently bad',
+        'change' : 'wont change',
+        'inherently bad' : 'wont change',
 
         # #new evidence argument
         # 'Evidence' :  'evidence'
@@ -63,7 +63,7 @@ class OxyCSBot(ChatBot):
         #disagree
 
         'disagree': 'disagree',
-        # "don't agree" : "disagree",        #maybe label agree with neg connotation it don't preceeds it?
+        "don't agree" : "disagree",
         'wrong' : 'disagree',
         'no' : 'disagree',
         'nah' : 'disagree',
@@ -85,10 +85,10 @@ class OxyCSBot(ChatBot):
         # 'capital punishment' : 'capital punishment',
         # 'Death penalty' : 'Death Penalty',
         # 'death penalty' : 'death Penalty'
-        'Capital' : 'capital punishment',
-        'capital' : 'capital punishment',
-        'Death' : 'death penalty',
-        'death' : 'death penalty'
+        'Capital punishment' : 'capital punishment',
+        'capital punishment' : 'capital punishment',
+        'Death penalty' : 'death Penalty',
+        'death penalty' : 'death Penalty'
 
     }
 
@@ -147,9 +147,9 @@ class OxyCSBot(ChatBot):
         if 'greeting' in tags:
             return self.go_to_state('main_question')
         elif 'capital punishment' in tags or 'death penalty' in tags and 'hello' not in tags:
-            if indicoio.sentiment(message) < .5:
+            if indicoio.sentiment(message) >= .5:
                 return self.go_to_state('pose_topic')
-            elif indicoio.sentiment(message) >= .5:
+            elif indicoio.sentiment(message) < .5:
                 return self.finish('agree')
         else:
             return self.finish('confused')
@@ -162,7 +162,7 @@ class OxyCSBot(ChatBot):
         return response
 
     def respond_from_main_question(self, message, tags):
-        """Decide what state to go to from the "specific_faculty" state.
+        """Decide what state to go to from the "main_question" state.
 
         Parameters:
             message (str): The incoming message.
@@ -171,22 +171,22 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        if "I don't" in message:
+        if "I don't" in message:  #####doesnt work ATM!!!
             return self.finish('agree')
         #go through all possible reasons
-        elif 'cheap' in tags or 'cost' in tags or 'price' in tags or 'cheaper' in tags:
+        elif 'cheaper' in tags:
             return self.go_to_state('cheaper_argument')
-        elif 'humane' in tags or 'not right' in tags or 'unjust' in tags or 'civil' in tags:
+        elif 'humane' in tags:
             return self.go_to_state('more_humane_argument')
-        elif 'dissuade' in tags or 'dissuades' in tags or 'deter' in tags or 'deters' in tags:
+        elif 'dissuade' in tags:
             return self.go_to_state('dissuades_people_argument')
-        elif 'justice' in tags or 'karma' in tags or 'legal' in tags or 'fair' in tags or 'eye for eye' in tags:
+        elif 'eye for eye' in tags:
             return self.go_to_state('eye_for_eye_argument')
-        elif 'contribute' in tags or 'society' in tags:
+        elif 'cant contribute' in tags:
             return self.go_to_state('cant_contribute_argument')
-        elif 'deserve' in tags or 'deserves' in tags or 'worst fate' in tags or 'suffer' in tags:
+        elif 'deserves worst fate' in tags:
             return self.go_to_state('deserves_worst_fate_argument')
-        elif 'change' in tags or 'inherently bad' in tags:
+        elif 'wont change' in tags:
             return self.go_to_state('wont_change_argument')
         else:
             return self.finish('confused')
