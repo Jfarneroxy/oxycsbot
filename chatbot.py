@@ -105,9 +105,9 @@ class ChatBot:
             f"do not call `go_to_state` on the default state {self.default_state};",
             f'use `finish` instead',
         ])
+        self.state = state
         on_enter_method = getattr(self, f'on_enter_{state}')
         response = on_enter_method()
-        self.state = state
         return response
 
     def chat(self):
@@ -132,6 +132,7 @@ class ChatBot:
         Returns:
             str: The response of the chatbot.
         """
+        #print("respond", self.state)
         respond_method = getattr(self, f'respond_from_{self.state}')
         return respond_method(message, self._get_tags(message))
 

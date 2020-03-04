@@ -231,7 +231,7 @@ class OxyCSBot(ChatBot):
 
     def on_enter_main_question(self):
         """Send a message when entering the "main_question" state."""
-        response = "Hello. Why do you support the use of capital punishment?"
+        response = "Hi. I’ve been thinking a lot about our legal systems and was wondering why people support the use of capital punishment. Why do you support capital punishment?"
         return response
 
     def respond_from_main_question(self, message, tags):
@@ -270,7 +270,7 @@ class OxyCSBot(ChatBot):
 
     def on_enter_cheaper_argument(self):
         """Send a message when entering the "cheaper_argument" state."""
-        return "Prison is actually cheaper! Court appeals can last upwards of 20+ years"
+        return "I thought that too at first, but it turns out that prison is actually cheaper! I was reading up on Amnesty International’s website and they estimate that death penalty cases cost an average of $1.26 million, while non-death penalty cases cost an average of $740,000"
 
     def respond_from_cheaper_argument(self, message, tags):
         """Decide what state to go to from the "cheaper_argument" state.
@@ -306,7 +306,7 @@ class OxyCSBot(ChatBot):
 
     def on_enter_more_humane_argument(self):
         """Send a message when entering the "more_humane_argument" state."""
-        return "Death via electrocution, firing squad, or poison doesn't sound very humane to me"
+        return "I would argue that methods of execution are far from humane. Most countries in the world have completely abolished capital punishment, as it’s considered to be inhumane and well below human rights standards"
 
     def respond_from_more_humane_argument(self, message, tags):
         """Decide what state to go to from the "more_humane_argument" state.
@@ -339,7 +339,7 @@ class OxyCSBot(ChatBot):
         
     def on_enter_dissuades_people_argument(self):
         """Send a message when entering the "dissuades_people_argument" state."""
-        return "This is actually false. Provide stat?????????????"
+        return "Actually, data from the FBI shows that the threat of capital punishment doesnt deter offenders. States without capital punishment generally have homicde rates below the national rate. This conviction is also arbitrary and unfair, as nearly all death row inmates are unable to afford their own attorneys, so their lives become subject to local politics and unpredictable factors"
 
     def respond_from_dissuades_people_argument(self, message, tags):
         """Decide what state to go to from the "dissuades_people_argument" state.
@@ -367,7 +367,7 @@ class OxyCSBot(ChatBot):
             return self.go_to_state(nextState)
     def on_enter_eye_for_eye_argument(self):
         """Send a message when entering the "eye_for_eye_argument" state."""
-        return "If multiple people were affected, then one death is not justice (fix??????????)"
+        return "I think that sort of oversimplifies the issue. And while some might consider it ‘fair’, an eye for an eye makes the whole world blind. As Gandhi said, if we try to solve violence with violence we become no better than the people we’re punishing"
 
     def respond_from_eye_for_eye_argument(self, message, tags):
         """Decide what state to go to from the "eye_for_eye_argument" state.
@@ -395,7 +395,7 @@ class OxyCSBot(ChatBot):
             return self.go_to_state(nextState)
     def on_enter_cant_contribute_argument(self):
         """Send a message when entering the "cant_contribute_argument" state."""
-        return "The average time for a capital punishment case is ____________. They might as well be in prison during this time, no?"
+        return "If the prison system works correctly, then inmates are reformed throughout their incarceration allowing them to become productive from behind bars or as members of society if they’re released. Also, since 1973 140 people have been taken off of death row due to new evidence or wrongful convictions. Wrongful convictions ending in the death penalty can cause a serious strain on society"
 
     def respond_from_cant_contribute_argument(self, message, tags):
         """Decide what state to go to from the "cant_contribute_argument" state.
@@ -453,7 +453,7 @@ class OxyCSBot(ChatBot):
     
     def on_enter_wont_change_argument(self):
         """Send a message when entering the "wont_change_argument" state."""
-        return "You don't know that"
+        return "I don’t think that’s a fair assumption to make. The goal of prison systems should be to reform inmates, not punish or torture people indefinitely. People should be given a chance to grow. If we jump to execution, we’re no better than they are"
 
     def respond_from_wont_change_argument(self, message, tags):
         """Decide what state to go to from the "wont_change_argument" state.
