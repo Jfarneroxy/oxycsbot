@@ -68,6 +68,7 @@ class OxyCSBot(ChatBot):
         'no' : 'disagree',
         'nah' : 'disagree',
         'nope' : 'disagree',
+        'false' : 'false',
 
         #agree
         'agree' : 'agree',
@@ -75,6 +76,7 @@ class OxyCSBot(ChatBot):
         'right' : 'agree',
         'ok' : 'agree',
         'okay' : 'agree',
+        'true' : 'agree',
 
         #generic tags
         'hello' : 'greeting',
@@ -92,7 +94,7 @@ class OxyCSBot(ChatBot):
 
     }
 
-    argumentsList = ['cheaper_argument', 'more_humane_argument', 'dissuades_people_argument', 'eye_for_eye_argument', 'deserves_worst_fate_argument', 'cant_contribute_argument', 'wont_change_argument']
+    argumentsList = ['cheaper_argument', 'more_humane_argument', 'dissuades_people_argument', 'eye_for_eye_argument', 'cant_contribute_argument', 'deserves_worst_fate_argument', 'wont_change_argument']
 
     def __init__(self):
         """Initialize the OxyCSBot.
@@ -118,6 +120,15 @@ class OxyCSBot(ChatBot):
             return 'finish_disagree' #TODO how do we pose a new topic?
         else:
             return 'confused'
+    
+    # def on_enter_gibberish_function(self):
+    #     return "That's not relevant to cp"
+            
+    # def respond_from_gibberish_function(self, message, tags):
+    #     if message not gibberish
+    #         return message
+    #     else:
+    #         go_to_state(gibberish_function(message, tags)
     
     # "waiting" state functions
 
@@ -158,6 +169,7 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
+        
         if "I don't" in message:  #####doesnt work ATM!!!
             return self.finish('agree')
         #go through all possible reasons
@@ -177,6 +189,8 @@ class OxyCSBot(ChatBot):
             return self.go_to_state('wont_change_argument')
         else:
             return self.finish('confused')
+            # message, tags = self.go_to_state('gibberish_function')
+            # return respond_from_main_question(self, message, tags)
 
     # "different arguments" state functions
 
@@ -303,7 +317,7 @@ class OxyCSBot(ChatBot):
 
     def on_enter_deserves_worst_fate_argument(self):
         """Send a message when entering the "deserves_worst_fate_argument" state."""
-        return "If multiple people were affected, then one death is not justice (fix??????????)"
+        return "Thinking about what your actions in prison for the rest of your life sounds pretty bad to me!"
 
     def respond_from_deserves_worst_fate_argument(self, message, tags):
         """Decide what state to go to from the "deserves_worst_fate_argument" state.
