@@ -424,7 +424,7 @@ class OxyCSBot(ChatBot):
 
     def on_enter_deserves_worst_fate_argument(self):
         """Send a message when entering the "deserves_worst_fate_argument" state."""
-        return "Thinking about what your actions in prison for the rest of your life sounds pretty bad to me!"
+        return "I think that life in prison is arguably a worse fate than death, and people need to be able to reflect upon their actions"
 
     def respond_from_deserves_worst_fate_argument(self, message, tags):
         """Decide what state to go to from the "deserves_worst_fate_argument" state.
