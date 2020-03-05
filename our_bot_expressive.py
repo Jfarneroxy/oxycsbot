@@ -270,8 +270,7 @@ class OxyCSBot(ChatBot):
 
     def on_enter_cheaper_argument(self):
         """Send a message when entering the "cheaper_argument" state."""
-        return "I thought that too at first, but it turns out that prison is actually cheaper! I was reading up on Amnesty International’s website and they estimate that death penalty cases cost an average of $1.26 million, while non-death penalty cases cost an average of $740,000"
-
+        return "That’s wrong. If you do any research at all, you’d see that death penalty cases cost an average of $1.26 million, while non-death penalty cases cost an average of $740,000"
     def respond_from_cheaper_argument(self, message, tags):
         """Decide what state to go to from the "cheaper_argument" state.
 
@@ -306,7 +305,8 @@ class OxyCSBot(ChatBot):
 
     def on_enter_more_humane_argument(self):
         """Send a message when entering the "more_humane_argument" state."""
-        return "I would argue that methods of execution are far from humane. Most countries in the world have completely abolished capital punishment, as it’s considered to be inhumane and well below human rights standards"
+        return "I could definitely understand how one could see death as more humane than a life in prison, but I don’t think that’s necessarily true in all cases. Additionally, methods of execution are far from humane. Most countries in the world have completely abolished capital punishment, and I think we should do the same"
+
 
     def respond_from_more_humane_argument(self, message, tags):
         """Decide what state to go to from the "more_humane_argument" state.
@@ -395,8 +395,8 @@ class OxyCSBot(ChatBot):
             return self.go_to_state(nextState)
     def on_enter_cant_contribute_argument(self):
         """Send a message when entering the "cant_contribute_argument" state."""
-        return "If the prison system works correctly, then inmates are reformed throughout their incarceration allowing them to become productive from behind bars or as members of society if they’re released. Also, since 1973 140 people have been taken off of death row due to new evidence or wrongful convictions. Wrongful convictions ending in the death penalty can cause a serious strain on society"
-
+        return "That’s pretty pessimistic. If the prison system works correctly, then inmates are reformed throughout their incarceration allowing them to become productive from behind bars or as members of society if they’re released. Also, since 1973, 140 people have been taken off of death row due to new evidence or wrongful convictions. We can’t risk executing innocent people"
+    
     def respond_from_cant_contribute_argument(self, message, tags):
         """Decide what state to go to from the "cant_contribute_argument" state.
 
@@ -424,8 +424,8 @@ class OxyCSBot(ChatBot):
 
     def on_enter_deserves_worst_fate_argument(self):
         """Send a message when entering the "deserves_worst_fate_argument" state."""
-        return "I think that life in prison is arguably a worse fate than death, and people need to be able to reflect upon their actions"
-
+        return "That’s certainly a confusing and particularly dense discussion. I can see where you’re coming from, however, I would ask you to consider that prison may be an even worse punishment than death. The time spent in solitude may arguably be more torturous and gives inmates time to think about their actions, as opposed to death which is an easy way out"
+                
     def respond_from_deserves_worst_fate_argument(self, message, tags):
         """Decide what state to go to from the "deserves_worst_fate_argument" state.
 
@@ -453,8 +453,8 @@ class OxyCSBot(ChatBot):
     
     def on_enter_wont_change_argument(self):
         """Send a message when entering the "wont_change_argument" state."""
-        return "That may be true in some cases, but I think in the majority of cases people have the ability to learn and grow. The goal of prison systems should be to reform inmates, not punish or torture people indefinitely"
-        
+        return "I don’t think that’s a fair assumption to make. The goal of prison systems should be to reform inmates, not punish or torture people indefinitely. People should be given a chance to grow. If we jump to execution, we’re no better than they are"
+
     def respond_from_wont_change_argument(self, message, tags):
         """Decide what state to go to from the "wont_change_argument" state.
 
