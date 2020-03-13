@@ -3,3 +3,4 @@ slackeventsapi
 flask
 gunicorn
 vaderSentiment
+requests

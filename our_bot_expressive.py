@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"""A simple chatbot that directs students to office hours of CS professors."""
+"""A simple chatbot that debates people who support capital punishment"""
 
 from chatbot import ChatBot
 import random
-import indicoio
 
-indicoio.config.api_key = 'cbd8b7b9fff405463abda7d325a40890'
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 analyser = SentimentIntensityAnalyzer()
 
 class OxyCSBot(ChatBot):
-    """A simple chatbot that directs students to office hours of CS professors."""
+    """A simple chatbot that debates people who support capital punishment"""
 
     STATES = ['gibberish', 'waiting', 'disagree_main_question', 'main_question','cheaper_argument', 'more_humane_argument', 'dissuades_people_argument', 'eye_for_eye_argument', 'deserves_worst_fate_argument', 'cant_contribute_argument', 'wont_change_argument', 'positive_convo_for_another_time', 'negative_convo_for_another_time', 'annoyed_convo_for_another_time']
     
@@ -190,11 +188,47 @@ class OxyCSBot(ChatBot):
 
     #function used to clean up code -- called by every function when responding
     def determineNextState(self, message, tags):
-        #placed before checking agree tags since disagree tags are more specific, reducing # of false positives
-        if 'disagree' in tags:
+        #if person keeps bringing up other topics after hearing counterpoint, check if they've "disagreed" enough times to end convo
+        #go through all other arguments
+        if 'cheaper' in tags:
             self.disagreeCounter += 1
             if self.disagreeCounter == 3:
-                print(self.disagreeCounter)
+                return 'finish_disagree'
+            return 'cheaper_argument'
+        elif 'humane' in tags:
+            self.disagreeCounter += 1
+            if self.disagreeCounter == 3:
+                return 'finish_disagree'
+            return 'more_humane_argument'
+        elif 'dissuade' in tags:
+            self.disagreeCounter += 1
+            if self.disagreeCounter == 3:
+                return 'finish_disagree'
+            return 'dissuades_people_argument'
+        elif 'eye for eye' in tags:
+            self.disagreeCounter += 1
+            if self.disagreeCounter == 3:
+                return 'finish_disagree'
+            return 'eye_for_eye_argument'
+        elif 'cant contribute' in tags:
+            self.disagreeCounter += 1
+            if self.disagreeCounter == 3:
+                return 'finish_disagree'
+            return 'cant_contribute_argument'
+        elif 'deserves worst fate' in tags:
+            self.disagreeCounter += 1           
+            if self.disagreeCounter == 3:
+                return 'finish_disagree'
+            return 'deserves_worst_fate_argument'
+        elif 'wont change' in tags:
+            self.disagreeCounter += 1
+            if self.disagreeCounter == 3:
+                return 'finish_disagree'
+            return 'wont_change_argument'
+        #placed before checking agree tags since disagree tags are more specific, reducing # of false positives
+        elif 'disagree' in tags:
+            self.disagreeCounter += 1
+            if self.disagreeCounter == 3:
                 return 'finish_disagree'
             if self.disagreeCounter < 3:
                 return 'negative_convo_for_another_time'
@@ -203,12 +237,25 @@ class OxyCSBot(ChatBot):
             if self.agreeCounter == 3:
                 return 'finish_agree'
             if self.agreeCounter < 3:  
-            # randomNumber = random.randrange(0, len(self.argumentsList))
-            # return randomself.argumentsList[randomNumber] #return the name of a random argument (.pop() when going to it first ensures that there will only be undiscussed arguments in array)
                 return 'positive_convo_for_another_time'
-        
         else:
             return 'confused'
+
+    def decideDiscussedState(self, nextState):
+        if nextState == 'cheaper_argument':
+            return 'whether capital punishment is cheaper than prison'
+        elif nextState == 'more_humane_argument':
+            return 'whether capital punishment is more humane than prison'
+        elif nextState == 'dissuades_people_argument':
+            return 'whether capital punishment dissuades people from committing other haneous crimes'
+        elif nextState ==  'eye_for_eye_argument':
+            return 'whether capital punishment is an eye for an eye type of thing'
+        elif nextState == 'deserves_worst_fate_argument':
+            return 'whether death is a worse fate for people than prison'
+        elif nextState == 'cant_contribute_argument':
+            return 'whether people can contribute to society if not sentenced to death'
+        elif nextState == 'wont_change_argument':
+            return 'whether people can change after committing such haneous crimes'
     
     def on_enter_gibberish(self):
         if self.gibberish_from != 'main_question':
@@ -271,7 +318,7 @@ class OxyCSBot(ChatBot):
         elif 'wont change' in tags:
             return self.go_to_state('wont_change_argument')
         else:
-            self.gibberish_from = 'main_question'
+            self.gibberish_from = 'disagree_main_question'
             return self.go_to_state('gibberish')
 
     def on_enter_main_question(self):
@@ -326,10 +373,8 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        
-        ####TODO add if statement that checks if argument counter has reached three to prevent circular arguments       
         nextState = self.determineNextState(message, tags) #returns string
-        #now that you've visited this argument, remove it from the arguments list!
+        #now that you've visited this argument for the first time, remove it from the arguments list!
         if self.gibberish_from != 'cheaper_argument':
             index = self.argumentsList.index('cheaper_argument')
             self.argumentsList[index] = None
@@ -387,7 +432,7 @@ class OxyCSBot(ChatBot):
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
         if nextState not in self.argumentsList:
-                self.discussedState = 'whether capital punishment is more humane'
+                self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
@@ -426,7 +471,7 @@ class OxyCSBot(ChatBot):
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
         if nextState not in self.argumentsList:
-                self.discussedState = 'whether capital punishment is dissuades people from committing other haneous crimes'
+                self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
@@ -464,7 +509,7 @@ class OxyCSBot(ChatBot):
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
         if nextState not in self.argumentsList:
-                self.discussedState = 'whether capital punishment is an eye for an eye type of thing'
+                self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
@@ -502,7 +547,7 @@ class OxyCSBot(ChatBot):
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
         if nextState not in self.argumentsList:
-                self.discussedState = 'whether people can contribute to society if not sentenced to death'
+                self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
@@ -541,7 +586,7 @@ class OxyCSBot(ChatBot):
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
         if nextState not in self.argumentsList:
-                self.discussedState = 'whether death is a worse fate for people than prison'
+                self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
@@ -580,7 +625,7 @@ class OxyCSBot(ChatBot):
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
         if nextState not in self.argumentsList:
-                self.discussedState = 'whether people can change after committing such crime'
+                self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
