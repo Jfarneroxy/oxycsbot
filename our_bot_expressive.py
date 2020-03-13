@@ -392,7 +392,7 @@ class OxyCSBot(ChatBot):
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
         if nextState not in self.argumentsList:
-                self.discussedState = 'whether capital punishment is cheaper'
+                self.discussedState = self.discussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
@@ -648,10 +648,8 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        if "I don't" in message:  #####doesnt work ATM!!!
-            return self.finish('agree')
         #go through all possible reasons
-        elif 'cheaper' in tags:
+        if 'cheaper' in tags:
             if 'cheaper_argument' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is cheaper'
             #we've already argued this topic before!
@@ -719,10 +717,8 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        if "I don't" in message:  #####doesnt work ATM!!!
-            return self.finish('agree')
         #go through all possible reasons
-        elif 'cheaper' in tags:
+        if 'cheaper' in tags:
             if 'cheaper_argument' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is cheaper'
             #we've already argued this topic before!
@@ -790,10 +786,8 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        if "I don't" in message:  #####doesnt work ATM!!!
-            return self.finish('agree')
         #go through all possible reasons
-        elif 'cheaper' in tags:
+        if 'cheaper' in tags:
             if 'cheaper_argument' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is cheaper'
             #we've already argued this topic before!
