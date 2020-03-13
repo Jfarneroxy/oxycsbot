@@ -6,11 +6,13 @@ import random
 import indicoio
 
 indicoio.config.api_key = 'cbd8b7b9fff405463abda7d325a40890'
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+analyser = SentimentIntensityAnalyzer()
 
 class OxyCSBot(ChatBot):
     """A simple chatbot that directs students to office hours of CS professors."""
 
-    STATES = ['gibberish', 'waiting', 'main_question','cheaper_argument', 'more_humane_argument', 'dissuades_people_argument', 'eye_for_eye_argument', 'deserves_worst_fate_argument', 'cant_contribute_argument', 'wont_change_argument', 'positive_convo_for_another_time', 'negative_convo_for_another_time', 'annoyed_convo_for_another_time']
+    STATES = ['gibberish', 'waiting', 'disagree_main_question', 'main_question','cheaper_argument', 'more_humane_argument', 'dissuades_people_argument', 'eye_for_eye_argument', 'deserves_worst_fate_argument', 'cant_contribute_argument', 'wont_change_argument', 'positive_convo_for_another_time', 'negative_convo_for_another_time', 'annoyed_convo_for_another_time']
     
 
     TAGS = {
@@ -138,6 +140,7 @@ class OxyCSBot(ChatBot):
         'no' : 'disagree',
         'nah' : 'disagree',
         'nope' : 'disagree',
+        "don't agree": 'disagree',
         #agree
         'agree' : 'agree',
         'yes' : 'agree',
@@ -174,17 +177,20 @@ class OxyCSBot(ChatBot):
         self.disagreeCounter = 0
         self.argumentsList = ['cheaper_argument', 'more_humane_argument', 'dissuades_people_argument', 'eye_for_eye_argument', 'cant_contribute_argument', 'deserves_worst_fate_argument', 'wont_change_argument']
         self.gibberish_from = None
+    
+    #used to determine sentiment of opening user input
+    def sentiment_analyzer_scores(self, sentence):
+        score = analyser.polarity_scores(sentence)
+        maxVal = 0
+        for key in score:
+            if score[key] > maxVal:
+                maxVal = score[key]
+                maxKey = key
+        return maxKey
 
     #function used to clean up code -- called by every function when responding
     def determineNextState(self, message, tags):
-        if 'agree' in tags:
-            self.agreeCounter += 1
-            if self.agreeCounter == 3:
-                return 'finish_agree'
-            if self.agreeCounter < 3:  
-            # randomNumber = random.randrange(0, len(self.argumentsList))
-            # return randomself.argumentsList[randomNumber] #return the name of a random argument (.pop() when going to it first ensures that there will only be undiscussed arguments in array)
-                return 'positive_convo_for_another_time'
+        #placed before checking agree tags since disagree tags are more specific, reducing # of false positives
         if 'disagree' in tags:
             self.disagreeCounter += 1
             if self.disagreeCounter == 3:
@@ -192,6 +198,15 @@ class OxyCSBot(ChatBot):
                 return 'finish_disagree'
             if self.disagreeCounter < 3:
                 return 'negative_convo_for_another_time'
+        elif 'agree' in tags:
+            self.agreeCounter += 1
+            if self.agreeCounter == 3:
+                return 'finish_agree'
+            if self.agreeCounter < 3:  
+            # randomNumber = random.randrange(0, len(self.argumentsList))
+            # return randomself.argumentsList[randomNumber] #return the name of a random argument (.pop() when going to it first ensures that there will only be undiscussed arguments in array)
+                return 'positive_convo_for_another_time'
+        
         else:
             return 'confused'
     
@@ -215,31 +230,49 @@ class OxyCSBot(ChatBot):
         if 'greeting' in tags:
             return self.go_to_state('main_question')
         elif 'capital punishment' in tags or 'death penalty' in tags and 'hello' not in tags:
-            if indicoio.sentiment(message) >= .5:
-                if 'cheaper' in tags:
-                    return self.go_to_state('cheaper_argument')
-                elif 'humane' in tags:
-                    return self.go_to_state('more_humane_argument')
-                elif 'dissuade' in tags:
-                    return self.go_to_state('dissuades_people_argument')
-                elif 'eye for eye' in tags:
-                    return self.go_to_state('eye_for_eye_argument')
-                elif 'cant contribute' in tags:
-                    return self.go_to_state('cant_contribute_argument')
-                elif 'deserves worst fate' in tags:
-                    return self.go_to_state('deserves_worst_fate_argument')
-                elif 'wont change' in tags:
-                    return self.go_to_state('wont_change_argument')
-                else:
-                    self.gibberish_from = 'main_question'
-                    return self.go_to_state('gibberish')
-            elif indicoio.sentiment(message) < .5:
+            message = message.replace('punishment','').replace('death','').replace('penalty','')
+            if self.sentiment_analyzer_scores(message) == 'pos' or self.sentiment_analyzer_scores(message) == 'neu':
+                return self.go_to_state('disagree_main_question')
+                
+            elif self.sentiment_analyzer_scores(message) == 'neg':
                 return self.finish('agree')
         else:
             self.gibberish_from = 'main_question'
-            return self.go_to_state('gibberish')        ###gibberish doesnt work!!!!!!!
+            return self.go_to_state('gibberish') 
 
-    # "specific_faculty" state functions
+    def on_enter_disagree_main_question(self):
+        """Send a message when entering the "disagree_main_question" state."""
+        response = "I strongly disagree. Why do you support capital punishment?"
+        return response
+
+    def respond_from_disagree_main_question(self, message, tags):
+        """Decide what state to go to from the "disagree_main_question" state.
+
+        Parameters:
+            message (str): The incoming message.
+            tags (Mapping[str, int]): A count of the tags that apply to the message.
+
+        Returns:
+            str: The message to send to the user.
+        """
+        #go through all possible reasons
+        if 'cheaper' in tags:
+            return self.go_to_state('cheaper_argument')
+        elif 'humane' in tags:
+            return self.go_to_state('more_humane_argument')
+        elif 'dissuade' in tags:
+            return self.go_to_state('dissuades_people_argument')
+        elif 'eye for eye' in tags:
+            return self.go_to_state('eye_for_eye_argument')
+        elif 'cant contribute' in tags:
+            return self.go_to_state('cant_contribute_argument')
+        elif 'deserves worst fate' in tags:
+            return self.go_to_state('deserves_worst_fate_argument')
+        elif 'wont change' in tags:
+            return self.go_to_state('wont_change_argument')
+        else:
+            self.gibberish_from = 'main_question'
+            return self.go_to_state('gibberish')
 
     def on_enter_main_question(self):
         """Send a message when entering the "main_question" state."""
@@ -295,7 +328,6 @@ class OxyCSBot(ChatBot):
         """
         
         ####TODO add if statement that checks if argument counter has reached three to prevent circular arguments       
-
         nextState = self.determineNextState(message, tags) #returns string
         #now that you've visited this argument, remove it from the arguments list!
         if self.gibberish_from != 'cheaper_argument':
