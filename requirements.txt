@@ -2,4 +2,4 @@ slackclient
 slackeventsapi
 flask
 gunicorn
-indicoio
+vaderSentiment
