@@ -7,10 +7,10 @@ import random
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 analyser = SentimentIntensityAnalyzer()
 
-class OxyCSBot(ChatBot):
+class CapPun(ChatBot):
     """A simple chatbot that debates people who support capital punishment"""
 
-    STATES = ['gibberish', 'waiting', 'disagree_main_question', 'main_question','cheaper_argument', 'more_humane_argument', 'dissuades_people_argument', 'eye_for_eye_argument', 'deserves_worst_fate_argument', 'cant_contribute_argument', 'wont_change_argument', 'positive_convo_for_another_time', 'negative_convo_for_another_time', 'annoyed_convo_for_another_time']
+    STATES = ['gibberish', 'waiting', 'disagree_main_question', 'main_question','cheaper_argument1', 'cheaper_argument2', 'more_humane_argument1', 'more_humane_argument2','more_humane_argument3','dissuades_people_argument1', 'dissuades_people_argument2', 'eye_for_eye_argument1', 'eye_for_eye_argument2',  'cant_contribute_argument1', 'cant_contribute_argument2', 'deserves_worst_fate_argument1', 'wont_change_argument1', 'wont_change_argument2', 'positive_convo_for_another_time', 'negative_convo_for_another_time', 'annoyed_convo_for_another_time']
     
 
     TAGS = {
@@ -146,7 +146,6 @@ class OxyCSBot(ChatBot):
         'ok' : 'agree',
         'okay' : 'agree',
         'win' : 'agree',
-        "don't" : 'agree',
         'fair' : 'agree',
         #greetings
         'hi' : 'greeting',
@@ -165,15 +164,12 @@ class OxyCSBot(ChatBot):
     }
 
     def __init__(self):
-        """Initialize the OxyCSBot.
+        """Initialize CapPun."""
 
-        The `professor` member variable stores whether the target professor has
-        been identified.
-        """
         super().__init__(default_state='waiting')
         self.agreeCounter = 0
         self.disagreeCounter = 0
-        self.argumentsList = ['cheaper_argument', 'more_humane_argument', 'dissuades_people_argument', 'eye_for_eye_argument', 'cant_contribute_argument', 'deserves_worst_fate_argument', 'wont_change_argument']
+        self.argumentsList = ['cheaper_argument1', 'more_humane_argument1', 'dissuades_people_argument1', 'eye_for_eye_argument1', 'cant_contribute_argument1', 'deserves_worst_fate_argument1', 'wont_change_argument1']
         self.gibberish_from = None
     
     #used to determine sentiment of opening user input
@@ -187,47 +183,48 @@ class OxyCSBot(ChatBot):
         return maxKey
 
     #function used to clean up code -- called by every function when responding
-    def determineNextState(self, message, tags):
+    def determineNextState(self, message, tags, levelInArgument, levelsInArgument):
         #if person keeps bringing up other topics after hearing counterpoint, check if they've "disagreed" enough times to end convo
         #go through all other arguments
         if 'cheaper' in tags:
             self.disagreeCounter += 1
             if self.disagreeCounter == 3:
                 return 'finish_disagree'
-            return 'cheaper_argument'
+            return 'cheaper_argument1'
         elif 'humane' in tags:
             self.disagreeCounter += 1
             if self.disagreeCounter == 3:
                 return 'finish_disagree'
-            return 'more_humane_argument'
+            return 'more_humane_argument1'
         elif 'dissuade' in tags:
             self.disagreeCounter += 1
             if self.disagreeCounter == 3:
                 return 'finish_disagree'
-            return 'dissuades_people_argument'
+            return 'dissuades_people_argument1'
         elif 'eye for eye' in tags:
             self.disagreeCounter += 1
             if self.disagreeCounter == 3:
                 return 'finish_disagree'
-            return 'eye_for_eye_argument'
+            return 'eye_for_eye_argument1'
         elif 'cant contribute' in tags:
             self.disagreeCounter += 1
             if self.disagreeCounter == 3:
                 return 'finish_disagree'
-            return 'cant_contribute_argument'
+            return 'cant_contribute_argument1'
         elif 'deserves worst fate' in tags:
             self.disagreeCounter += 1           
             if self.disagreeCounter == 3:
                 return 'finish_disagree'
-            return 'deserves_worst_fate_argument'
+            return 'deserves_worst_fate_argument1'
         elif 'wont change' in tags:
             self.disagreeCounter += 1
             if self.disagreeCounter == 3:
                 return 'finish_disagree'
-            return 'wont_change_argument'
+            return 'wont_change_argument1'
         #placed before checking agree tags since disagree tags are more specific, reducing # of false positives
         elif 'disagree' in tags:
-            self.disagreeCounter += 1
+            if levelInArgument == levelsInArgument:
+                self.disagreeCounter += 1
             if self.disagreeCounter == 3:
                 return 'finish_disagree'
             if self.disagreeCounter < 3:
@@ -242,19 +239,19 @@ class OxyCSBot(ChatBot):
             return 'confused'
 
     def decideDiscussedState(self, nextState):
-        if nextState == 'cheaper_argument':
+        if nextState == 'cheaper_argument1':
             return 'whether capital punishment is cheaper than prison'
-        elif nextState == 'more_humane_argument':
+        elif nextState == 'more_humane_argument1':
             return 'whether capital punishment is more humane than prison'
-        elif nextState == 'dissuades_people_argument':
+        elif nextState == 'dissuades_people_argument1':
             return 'whether capital punishment dissuades people from committing other haneous crimes'
-        elif nextState ==  'eye_for_eye_argument':
+        elif nextState ==  'eye_for_eye_argument1':
             return 'whether capital punishment is an eye for an eye type of thing'
-        elif nextState == 'deserves_worst_fate_argument':
+        elif nextState == 'deserves_worst_fate_argument1':
             return 'whether death is a worse fate for people than prison'
-        elif nextState == 'cant_contribute_argument':
+        elif nextState == 'cant_contribute_argument1':
             return 'whether people can contribute to society if not sentenced to death'
-        elif nextState == 'wont_change_argument':
+        elif nextState == 'wont_change_argument1':
             return 'whether people can change after committing such haneous crimes'
     
     def on_enter_gibberish(self):
@@ -304,19 +301,19 @@ class OxyCSBot(ChatBot):
         """
         #go through all possible reasons
         if 'cheaper' in tags:
-            return self.go_to_state('cheaper_argument')
+            return self.go_to_state('cheaper_argument1')
         elif 'humane' in tags:
-            return self.go_to_state('more_humane_argument')
+            return self.go_to_state('more_humane_argument1')
         elif 'dissuade' in tags:
-            return self.go_to_state('dissuades_people_argument')
+            return self.go_to_state('dissuades_people_argument1')
         elif 'eye for eye' in tags:
-            return self.go_to_state('eye_for_eye_argument')
+            return self.go_to_state('eye_for_eye_argument1')
         elif 'cant contribute' in tags:
-            return self.go_to_state('cant_contribute_argument')
+            return self.go_to_state('cant_contribute_argument1')
         elif 'deserves worst fate' in tags:
-            return self.go_to_state('deserves_worst_fate_argument')
+            return self.go_to_state('deserves_worst_fate_argument1')
         elif 'wont change' in tags:
-            return self.go_to_state('wont_change_argument')
+            return self.go_to_state('wont_change_argument1')
         else:
             self.gibberish_from = 'disagree_main_question'
             return self.go_to_state('gibberish')
@@ -341,30 +338,30 @@ class OxyCSBot(ChatBot):
             return self.finish('agree')
         #go through all possible reasons
         elif 'cheaper' in tags:
-            return self.go_to_state('cheaper_argument')
+            return self.go_to_state('cheaper_argument1')
         elif 'humane' in tags:
-            return self.go_to_state('more_humane_argument')
+            return self.go_to_state('more_humane_argument1')
         elif 'dissuade' in tags:
-            return self.go_to_state('dissuades_people_argument')
+            return self.go_to_state('dissuades_people_argument1')
         elif 'eye for eye' in tags:
-            return self.go_to_state('eye_for_eye_argument')
+            return self.go_to_state('eye_for_eye_argument1')
         elif 'cant contribute' in tags:
-            return self.go_to_state('cant_contribute_argument')
+            return self.go_to_state('cant_contribute_argument1')
         elif 'deserves worst fate' in tags:
-            return self.go_to_state('deserves_worst_fate_argument')
+            return self.go_to_state('deserves_worst_fate_argument1')
         elif 'wont change' in tags:
-            return self.go_to_state('wont_change_argument')
+            return self.go_to_state('wont_change_argument1')
         else:
             self.gibberish_from = 'main_question'
             return self.go_to_state('gibberish')
 
     # "different arguments" state functions
 
-    def on_enter_cheaper_argument(self):
-        """Send a message when entering the "cheaper_argument" state."""
-        return "That’s wrong. If you do any research at all, you’d see that death penalty cases cost an average of $1.26 million, while non-death penalty cases cost an average of $740,000"
-    def respond_from_cheaper_argument(self, message, tags):
-        """Decide what state to go to from the "cheaper_argument" state.
+    def on_enter_cheaper_argument1(self):
+        """Send a message when entering the "cheaper_argument1" state."""
+        return "Actually, you're wrong! Prison is cheaper"
+    def respond_from_cheaper_argument1(self, message, tags):
+        """Decide what state to go to from the "cheaper_argument1" state.
 
         Parameters:
             message (str): The incoming message.
@@ -373,38 +370,34 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        nextState = self.determineNextState(message, tags) #returns string
+        nextState = self.determineNextState(message, tags, 1, 2) #returns string
         #now that you've visited this argument for the first time, remove it from the arguments list!
-        if self.gibberish_from != 'cheaper_argument':
-            index = self.argumentsList.index('cheaper_argument')
+        if self.gibberish_from != 'cheaper_argument1':
+            index = self.argumentsList.index('cheaper_argument1')
             self.argumentsList[index] = None
 
         if nextState == 'finish_agree':
             return self.finish('agree')
-        if nextState == 'finish_disagree':
-            return self.finish('disagree')
-        if nextState == 'positive_convo_for_another_time':
+        elif nextState == 'positive_convo_for_another_time':
             return self.go_to_state('positive_convo_for_another_time')
-        if nextState == 'negative_convo_for_another_time':
-            return self.go_to_state('negative_convo_for_another_time')
-        if nextState == 'confused':
-            self.gibberish_from = 'cheaper_argument'
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('cheaper_argument2')
+        elif nextState == 'confused':
+            self.gibberish_from = 'cheaper_argument1'
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
-        if nextState not in self.argumentsList:
+        elif nextState not in self.argumentsList:
                 self.discussedState = self.discussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
-            return self.go_to_state(nextState)          
-
-    def on_enter_more_humane_argument(self):
-        """Send a message when entering the "more_humane_argument" state."""
-        return "I could definitely understand how one could see death as more humane than a life in prison, but I don’t think that’s necessarily true in all cases. Additionally, methods of execution are far from humane. Most countries in the world have completely abolished capital punishment, and I think we should do the same"
-
-
-    def respond_from_more_humane_argument(self, message, tags):
-        """Decide what state to go to from the "more_humane_argument" state.
+            return self.go_to_state(nextState)   
+    
+    def on_enter_cheaper_argument2(self):
+        """Send a message when entering the "cheaper_argument2" state."""
+        return "Well, according to Amnesty International, death penalty cases cost an average of $1.26 million while non-death penalty cases cost an average of $740,000"
+    def respond_from_cheaper_argument2(self, message, tags):
+        """Decide what state to go to from the "cheaper_argument2" state.
 
         Parameters:
             message (str): The incoming message.
@@ -413,37 +406,132 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        nextState = self.determineNextState(message, tags) #returns string
+        nextState = self.determineNextState(message, tags, 2, 2) #returns string
+
+        if nextState == 'finish_agree':
+            return self.finish('agree')
+        elif nextState == 'finish_disagree':
+            return self.finish('disagree')
+        elif nextState == 'positive_convo_for_another_time':
+            return self.go_to_state('positive_convo_for_another_time')
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('negative_convo_for_another_time')
+        elif nextState == 'confused':
+            self.gibberish_from = 'cheaper_argument2'
+            return self.go_to_state('gibberish')
+        #if you've already talked about what the user wants to talk about, say you've already talked about it!
+        elif nextState not in self.argumentsList:
+                self.discussedState = self.discussedState(nextState)
+                #we've already argued this topic before!
+                return self.go_to_state('annoyed_convo_for_another_time')
+        else:
+            return self.go_to_state(nextState)         
+                   
+
+    def on_enter_more_humane_argument1(self):
+        """Send a message when entering the "more_humane_argument1" state."""
+        return "How do you justify that?"
+
+    def respond_from_more_humane_argument1(self, message, tags):
+        """Decide what state to go to from the "more_humane_argument1" state.
+
+        Parameters:
+            message (str): The incoming message.
+            tags (Mapping[str, int]): A count of the tags that apply to the message.
+
+        Returns:
+            str: The message to send to the user.
+        """
+        nextState = self.determineNextState(message, tags, 1, 3) #returns string
         #now that you've visited this argument, remove it from the arguments list!
-        if self.gibberish_from != 'more_humane_argument': 
-            index = self.argumentsList.index('more_humane_argument')
+        if self.gibberish_from != 'more_humane_argument1': 
+            index = self.argumentsList.index('more_humane_argument1')
             self.argumentsList[index] = None
 
         if nextState == 'finish_agree':
             return self.finish('agree')
-        if nextState == 'finish_disagree':
-            return self.finish('disagree')
-        if nextState == 'positive_convo_for_another_time':
+        elif nextState == 'positive_convo_for_another_time':
             return self.go_to_state('positive_convo_for_another_time')
-        if nextState == 'negative_convo_for_another_time':
-            return self.go_to_state('negative_convo_for_another_time')
-        if nextState == 'confused':
-            self.gibberish_from = 'more_humane_argument'
+        elif nextState == 'confused':
+            self.gibberish_from = 'more_humane_argument1'
+            return self.go_to_state('gibberish')
+        else:
+            return self.go_to_state('more_humane_argument2')
+   
+    def on_enter_more_humane_argument2(self):
+        """Send a message when entering the "more_humane_argument2" state."""
+        return "That doesn't make sense, I think death is far from humane and incredibly barbaric"
+                
+    def respond_from_more_humane_argument2(self, message, tags):
+        """Decide what state to go to from the "more_humane_argument2" state.
+
+        Parameters:
+            message (str): The incoming message.
+            tags (Mapping[str, int]): A count of the tags that apply to the message.
+
+        Returns:
+            str: The message to send to the user.
+        """
+        nextState = self.determineNextState(message, tags, 2, 3) #returns string
+
+        if nextState == 'finish_agree':
+            return self.finish('agree')
+        elif nextState == 'positive_convo_for_another_time':
+            return self.go_to_state('positive_convo_for_another_time')
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('more_humane_argument3')
+        elif nextState == 'confused':
+            self.gibberish_from = 'more_humane_argument2'
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
-        if nextState not in self.argumentsList:
+        elif nextState not in self.argumentsList:
                 self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
-            return self.go_to_state(nextState)   
+            return self.go_to_state(nextState)     
+
+    def on_enter_more_humane_argument3(self):
+        """Send a message when entering the "more_humane_argument3" state."""
+        return "Most countries in the world have completely abolished capital punishment, and I think we should do the same"
+
+    def respond_from_more_humane_argument3(self, message, tags):
+        """Decide what state to go to from the "more_humane_argument3" state.
+
+        Parameters:
+            message (str): The incoming message.
+            tags (Mapping[str, int]): A count of the tags that apply to the message.
+
+        Returns:
+            str: The message to send to the user.
+        """
+        nextState = self.determineNextState(message, tags, 3, 3) #returns string
+
+        if nextState == 'finish_agree':
+            return self.finish('agree')
+        elif nextState == 'finish_disagree':
+            return self.finish('disagree')
+        elif nextState == 'positive_convo_for_another_time':
+            return self.go_to_state('positive_convo_for_another_time')
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('negative_convo_for_another_time')
+        elif nextState == 'confused':
+            self.gibberish_from = 'more_humane_argument3'
+            return self.go_to_state('gibberish')
+        #if you've already talked about what the user wants to talk about, say you've already talked about it!
+        elif nextState not in self.argumentsList:
+                self.discussedState = self.decideDiscussedState(nextState)
+                #we've already argued this topic before!
+                return self.go_to_state('annoyed_convo_for_another_time')
+        else:
+            return self.go_to_state(nextState) 
+
+    def on_enter_dissuades_people_argument1(self):
+        """Send a message when entering the "dissuades_people_argument1" state."""
+        return "Actually, data from the FBI shows that the threat of capital punishment doesnt deter offenders. States without capital punishment generally have homicde rates below the national rate"
         
-    def on_enter_dissuades_people_argument(self):
-        """Send a message when entering the "dissuades_people_argument" state."""
-        return "Actually, data from the FBI shows that the threat of capital punishment doesnt deter offenders. States without capital punishment generally have homicde rates below the national rate. This conviction is also arbitrary and unfair, as nearly all death row inmates are unable to afford their own attorneys, so their lives become subject to local politics and unpredictable factors"
-
-    def respond_from_dissuades_people_argument(self, message, tags):
-        """Decide what state to go to from the "dissuades_people_argument" state.
+    def respond_from_dissuades_people_argument1(self, message, tags):
+        """Decide what state to go to from the "dissuades_people_argument1" state.
 
         Parameters:
             message (str): The incoming message.
@@ -452,74 +540,35 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        nextState = self.determineNextState(message, tags) #returns string
+        nextState = self.determineNextState(message, tags, 1, 2) #returns string
         #now that you've visited this argument, remove it from the arguments list!
-        if self.gibberish_from != 'dissuades_people_argument':    
-            index = self.argumentsList.index('dissuades_people_argument')
+        if self.gibberish_from != 'dissuades_people_argument1':    
+            index = self.argumentsList.index('dissuades_people_argument1')
             self.argumentsList[index] = None
 
         if nextState == 'finish_agree':
             return self.finish('agree')
-        if nextState == 'finish_disagree':
-            return self.finish('disagree')
-        if nextState == 'positive_convo_for_another_time':
+        elif nextState == 'positive_convo_for_another_time':
             return self.go_to_state('positive_convo_for_another_time')
-        if nextState == 'negative_convo_for_another_time':
-            return self.go_to_state('negative_convo_for_another_time')
-        if nextState == 'confused':
-            self.gibberish_from = 'dissuades_people_argument'
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('dissuades_people_argument2')
+        elif nextState == 'confused':
+            self.gibberish_from = 'dissuades_people_argument1'
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
-        if nextState not in self.argumentsList:
+        elif nextState not in self.argumentsList:
                 self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
-            return self.go_to_state(nextState)   
-    def on_enter_eye_for_eye_argument(self):
-        """Send a message when entering the "eye_for_eye_argument" state."""
-        return "I think that sort of oversimplifies the issue. And while some might consider it ‘fair’, an eye for an eye makes the whole world blind. As Gandhi said, if we try to solve violence with violence we become no better than the people we’re punishing"
-
-    def respond_from_eye_for_eye_argument(self, message, tags):
-        """Decide what state to go to from the "eye_for_eye_argument" state.
-
-        Parameters:
-            message (str): The incoming message.
-            tags (Mapping[str, int]): A count of the tags that apply to the message.
-
-        Returns:
-            str: The message to send to the user.
-        """
-        nextState = self.determineNextState(message, tags) #returns string
-        #now that you've visited this argument, remove it from the arguments list!
-        if self.gibberish_from != 'eye_for_eye_argument':    
-            index = self.argumentsList.index('eye_for_eye_argument')
-            self.argumentsList[index] = None
-
-        if nextState == 'finish_agree':
-            return self.finish('agree')
-        if nextState == 'finish_disagree':
-            return self.finish('disagree')
-        if nextState == 'positive_convo_for_another_time':
-            return self.go_to_state('positive_convo_for_another_time')
-        if nextState == 'negative_convo_for_another_time':
-            return self.go_to_state('negative_convo_for_another_time')
-        if nextState == 'confused':
-            self.gibberish_from = 'eye_for_eye_argument'
-            return self.go_to_state('gibberish')
-        #if you've already talked about what the user wants to talk about, say you've already talked about it!
-        if nextState not in self.argumentsList:
-                self.discussedState = self.decideDiscussedState(nextState)
-                #we've already argued this topic before!
-                return self.go_to_state('annoyed_convo_for_another_time')
-        else:
-            return self.go_to_state(nextState)   
-    def on_enter_cant_contribute_argument(self):
-        """Send a message when entering the "cant_contribute_argument" state."""
-        return "That’s pretty pessimistic. If the prison system works correctly, then inmates are reformed throughout their incarceration allowing them to become productive from behind bars or as members of society if they’re released. Also, since 1973, 140 people have been taken off of death row due to new evidence or wrongful convictions. We can’t risk executing innocent people"
+            return self.go_to_state(nextState)
     
-    def respond_from_cant_contribute_argument(self, message, tags):
-        """Decide what state to go to from the "cant_contribute_argument" state.
+    def on_enter_dissuades_people_argument2(self):
+        """Send a message when entering the "dissuades_people_argument2" state."""
+        return "Well, I think this conviction is also arbitrary and unfair, as nearly all death row inmates are unable to afford their own attorneys, so their lives become subject to local politics and unpredictable factors"
+        
+    def respond_from_dissuades_people_argument2(self, message, tags):
+        """Decide what state to go to from the "dissuades_people_argument2" state.
 
         Parameters:
             message (str): The incoming message.
@@ -528,37 +577,142 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        nextState = self.determineNextState(message, tags) #returns string
+        nextState = self.determineNextState(message, tags, 2, 2) #returns string
+
+        if nextState == 'finish_agree':
+            return self.finish('agree')
+        elif nextState == 'finish_disagree':
+            return self.finish('disagree')
+        elif nextState == 'positive_convo_for_another_time':
+            return self.go_to_state('positive_convo_for_another_time')
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('negative_convo_for_another_time')
+        elif nextState == 'confused':
+            self.gibberish_from = 'dissuades_people_argument2'
+            return self.go_to_state('gibberish')
+        #if you've already talked about what the user wants to talk about, say you've already talked about it!
+        elif nextState not in self.argumentsList:
+                self.discussedState = self.decideDiscussedState(nextState)
+                #we've already argued this topic before!
+                return self.go_to_state('annoyed_convo_for_another_time')
+        else:
+            return self.go_to_state(nextState)
+   
+    def on_enter_eye_for_eye_argument1(self):
+        """Send a message when entering the "eye_for_eye_argument1" state."""
+        return 'You\'re oversimplifying it, the whole quote is "an eye for an eye makes the whole world blind"'
+
+    def respond_from_eye_for_eye_argument1(self, message, tags):
+        """Decide what state to go to from the "eye_for_eye_argument1" state.
+
+        Parameters:
+            message (str): The incoming message.
+            tags (Mapping[str, int]): A count of the tags that apply to the message.
+
+        Returns:
+            str: The message to send to the user.
+        """
+        nextState = self.determineNextState(message, tags, 1, 2) #returns string
         #now that you've visited this argument, remove it from the arguments list!
-        if self.gibberish_from != 'cant_contribute_argument':    
-            index = self.argumentsList.index('cant_contribute_argument')
+        if self.gibberish_from != 'eye_for_eye_argument1':    
+            index = self.argumentsList.index('eye_for_eye_argument1')
             self.argumentsList[index] = None
 
         if nextState == 'finish_agree':
             return self.finish('agree')
-        if nextState == 'finish_disagree':
-            return self.finish('disagree')
-        if nextState == 'positive_convo_for_another_time':
+        elif nextState == 'positive_convo_for_another_time':
             return self.go_to_state('positive_convo_for_another_time')
-        if nextState == 'negative_convo_for_another_time':
-            return self.go_to_state('negative_convo_for_another_time')
-        if nextState == 'confused':
-            self.gibberish_from = 'cont_contribute_argument'
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('eye_for_eye_argument2')
+        elif nextState == 'confused':
+            self.gibberish_from = 'eye_for_eye_argument1'
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
-        if nextState not in self.argumentsList:
+        elif nextState not in self.argumentsList:
+                self.discussedState = self.decideDiscussedState(nextState)
+                #we've already argued this topic before!
+                return self.go_to_state('annoyed_convo_for_another_time')
+        else:
+            return self.go_to_state(nextState) 
+
+    def on_enter_eye_for_eye_argument2(self):
+        """Send a message when entering the "eye_for_eye_argument2" state."""
+        return "Well, as Gandhi said, if we try to solve violence with violence we become no better than the people we’re punishing"
+
+    def respond_from_eye_for_eye_argument2(self, message, tags):
+        """Decide what state to go to from the "eye_for_eye_argument2" state.
+
+        Parameters:
+            message (str): The incoming message.
+            tags (Mapping[str, int]): A count of the tags that apply to the message.
+
+        Returns:
+            str: The message to send to the user.
+        """
+        nextState = self.determineNextState(message, tags, 2, 2) #returns string
+
+        if nextState == 'finish_agree':
+            return self.finish('agree')
+        elif nextState == 'finish_disagree':
+            return self.finish('disagree')
+        elif nextState == 'positive_convo_for_another_time':
+            return self.go_to_state('positive_convo_for_another_time')
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('negative_convo_for_another_time')
+        elif nextState == 'confused':
+            self.gibberish_from = 'eye_for_eye_argument2'
+            return self.go_to_state('gibberish')
+        #if you've already talked about what the user wants to talk about, say you've already talked about it!
+        elif nextState not in self.argumentsList:
+                self.discussedState = self.decideDiscussedState(nextState)
+                #we've already argued this topic before!
+                return self.go_to_state('annoyed_convo_for_another_time')
+        else:
+            return self.go_to_state(nextState)
+  
+    def on_enter_cant_contribute_argument1(self):
+        """Send a message when entering the "cant_contribute_argument1" state."""
+        return "That’s pretty pessimistic. If the prison system works correctly, then inmates are reformed throughout their incarceration allowing them to become productive from behind bars or as members of society if they’re released"
+    
+    def respond_from_cant_contribute_argument1(self, message, tags):
+        """Decide what state to go to from the "cant_contribute_argument1" state.
+
+        Parameters:
+            message (str): The incoming message.
+            tags (Mapping[str, int]): A count of the tags that apply to the message.
+
+        Returns:
+            str: The message to send to the user.
+        """
+        nextState = self.determineNextState(message, tags, 1, 2) #returns string
+        #now that you've visited this argument, remove it from the arguments list!
+        if self.gibberish_from != 'cant_contribute_argument1':    
+            index = self.argumentsList.index('cant_contribute_argument1')
+            self.argumentsList[index] = None
+
+        if nextState == 'finish_agree':
+            return self.finish('agree')
+        elif nextState == 'positive_convo_for_another_time':
+            return self.go_to_state('positive_convo_for_another_time')
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('cant_contribute_argument2')
+        elif nextState == 'confused':
+            self.gibberish_from = 'cant_contribute_argument1'
+            return self.go_to_state('gibberish')
+        #if you've already talked about what the user wants to talk about, say you've already talked about it!
+        elif nextState not in self.argumentsList:
                 self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
             return self.go_to_state(nextState)   
 
-    def on_enter_deserves_worst_fate_argument(self):
-        """Send a message when entering the "deserves_worst_fate_argument" state."""
-        return "That’s certainly a confusing and particularly dense discussion. I can see where you’re coming from, however, I would ask you to consider that prison may be an even worse punishment than death. The time spent in solitude may arguably be more torturous and gives inmates time to think about their actions, as opposed to death which is an easy way out"
-
-    def respond_from_deserves_worst_fate_argument(self, message, tags):
-        """Decide what state to go to from the "deserves_worst_fate_argument" state.
+    def on_enter_cant_contribute_argument2(self):
+        """Send a message when entering the "cant_contribute_argument2" state."""
+        return "Well, numbers don't lie, and since 1973, 140 people have been taken off of death row due to new evidence or wrongful convictions. We can’t risk executing innocent people"
+    
+    def respond_from_cant_contribute_argument2(self, message, tags):
+        """Decide what state to go to from the "cant_contribute_argument2" state.
 
         Parameters:
             message (str): The incoming message.
@@ -567,37 +721,72 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        nextState = self.determineNextState(message, tags) #returns string
+        nextState = self.determineNextState(message, tags, 2, 2) #returns string
+
+        if nextState == 'finish_agree':
+            return self.finish('agree')
+        elif nextState == 'finish_disagree':
+            return self.finish('disagree')
+        elif nextState == 'positive_convo_for_another_time':
+            return self.go_to_state('positive_convo_for_another_time')
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('negative_convo_for_another_time')
+        elif nextState == 'confused':
+            self.gibberish_from = 'cant_contribute_argument2'
+            return self.go_to_state('gibberish')
+        #if you've already talked about what the user wants to talk about, say you've already talked about it!
+        elif nextState not in self.argumentsList:
+                self.discussedState = self.decideDiscussedState(nextState)
+                #we've already argued this topic before!
+                return self.go_to_state('annoyed_convo_for_another_time')
+        else:
+            return self.go_to_state(nextState)     
+
+    def on_enter_deserves_worst_fate_argument1(self):
+        """Send a message when entering the "deserves_worst_fate_argument1" state."""
+        return "I think that life in prison is arguably a worse fate than death, and people need to be able to reflect upon their actions"
+
+    def respond_from_deserves_worst_fate_argument1(self, message, tags):
+        """Decide what state to go to from the "deserves_worst_fate_argument1" state.
+
+        Parameters:
+            message (str): The incoming message.
+            tags (Mapping[str, int]): A count of the tags that apply to the message.
+
+        Returns:
+            str: The message to send to the user.
+        """
+        nextState = self.determineNextState(message, tags, 1, 1) #returns string
         #now that you've visited this argument, remove it from the arguments list!
-        if self.gibberish_from != 'deserves_worst_fate_argument':    
-            index = self.argumentsList.index('deserves_worst_fate_argument')
+        if self.gibberish_from != 'deserves_worst_fate_argument1':    
+            index = self.argumentsList.index('deserves_worst_fate_argument1')
             self.argumentsList[index] = None
 
         if nextState == 'finish_agree':
             return self.finish('agree')
-        if nextState == 'finish_disagree':
+        elif nextState == 'finish_disagree':
             return self.finish('disagree')
-        if nextState == 'positive_convo_for_another_time':
+        elif nextState == 'positive_convo_for_another_time':
             return self.go_to_state('positive_convo_for_another_time')
-        if nextState == 'negative_convo_for_another_time':
+        elif nextState == 'negative_convo_for_another_time':
             return self.go_to_state('negative_convo_for_another_time')
-        if nextState == 'confused':
-            self.gibberish_from = 'deserves_worst_fate_argument'
+        elif nextState == 'confused':
+            self.gibberish_from = 'deserves_worst_fate_argument1'
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
-        if nextState not in self.argumentsList:
+        elif nextState not in self.argumentsList:
                 self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
             return self.go_to_state(nextState) 
     
-    def on_enter_wont_change_argument(self):
-        """Send a message when entering the "wont_change_argument" state."""
-        return "I don’t think that’s a fair assumption to make. The goal of prison systems should be to reform inmates, not punish or torture people indefinitely. People should be given a chance to grow. If we jump to execution, we’re no better than they are"
+    def on_enter_wont_change_argument1(self):
+        """Send a message when entering the "wont_change_argument1" state."""
+        return "I don’t think that’s a fair assumption to make. The goal of prison systems should be to reform inmates, not punish or torture people indefinitely"
 
-    def respond_from_wont_change_argument(self, message, tags):
-        """Decide what state to go to from the "wont_change_argument" state.
+    def respond_from_wont_change_argument1(self, message, tags):
+        """Decide what state to go to from the "wont_change_argument1" state.
 
         Parameters:
             message (str): The incoming message.
@@ -606,30 +795,63 @@ class OxyCSBot(ChatBot):
         Returns:
             str: The message to send to the user.
         """
-        nextState = self.determineNextState(message, tags) #returns string
+        nextState = self.determineNextState(message, tags, 1, 2) #returns string
         #now that you've visited this argument, remove it from the arguments list!
-        if self.gibberish_from != 'wont_change_argument':    
-            index = self.argumentsList.index('wont_change_argument')
+        if self.gibberish_from != 'wont_change_argument1':    
+            index = self.argumentsList.index('wont_change_argument1')
             self.argumentsList[index] = None
 
         if nextState == 'finish_agree':
             return self.finish('agree')
-        if nextState == 'finish_disagree':
-            return self.finish('disagree')
-        if nextState == 'positive_convo_for_another_time':
+        elif nextState == 'positive_convo_for_another_time':
             return self.go_to_state('positive_convo_for_another_time')
-        if nextState == 'negative_convo_for_another_time':
-            return self.go_to_state('negative_convo_for_another_time')
-        if nextState == 'confused':
-            self.gibberish_from = 'wont_change_argument'
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('wont_change_argument2')
+        elif nextState == 'confused':
+            self.gibberish_from = 'wont_change_argument1'
             return self.go_to_state('gibberish')
         #if you've already talked about what the user wants to talk about, say you've already talked about it!
-        if nextState not in self.argumentsList:
+        elif nextState not in self.argumentsList:
                 self.discussedState = self.decideDiscussedState(nextState)
                 #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
         else:
             return self.go_to_state(nextState) 
+
+    def on_enter_wont_change_argument2(self):
+        """Send a message when entering the "wont_change_argument2" state."""
+        return "I don't know, I think people should be given a chance to grow. If we jump to execution, we’re no better than they are"
+
+    def respond_from_wont_change_argument2(self, message, tags):
+        """Decide what state to go to from the "wont_change_argument2" state.
+
+        Parameters:
+            message (str): The incoming message.
+            tags (Mapping[str, int]): A count of the tags that apply to the message.
+
+        Returns:
+            str: The message to send to the user.
+        """
+        nextState = self.determineNextState(message, tags, 2, 2) #returns string
+
+        if nextState == 'finish_agree':
+            return self.finish('agree')
+        elif nextState == 'finish_disagree':
+            return self.finish('disagree')
+        elif nextState == 'positive_convo_for_another_time':
+            return self.go_to_state('positive_convo_for_another_time')
+        elif nextState == 'negative_convo_for_another_time':
+            return self.go_to_state('negative_convo_for_another_time')
+        elif nextState == 'confused':
+            self.gibberish_from = 'wont_change_argument2'
+            return self.go_to_state('gibberish')
+        #if you've already talked about what the user wants to talk about, say you've already talked about it!
+        elif nextState not in self.argumentsList:
+                self.discussedState = self.decideDiscussedState(nextState)
+                #we've already argued this topic before!
+                return self.go_to_state('annoyed_convo_for_another_time')
+        else:
+            return self.go_to_state(nextState)    
 
     # temp functions
 
@@ -650,54 +872,54 @@ class OxyCSBot(ChatBot):
         """
         #go through all possible reasons
         if 'cheaper' in tags:
-            if 'cheaper_argument' not in self.argumentsList:
+            if 'cheaper_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is cheaper'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('cheaper_argument')
+                return self.go_to_state('cheaper_argument1')
         elif 'humane' in tags:
-            if 'more_humane_argument' not in self.argumentsList:
+            if 'more_humane_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is more humane'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('more_humane_argument')
+                return self.go_to_state('more_humane_argument1')
         elif 'dissuade' in tags:
-            if 'dissuades_people_argument' not in self.argumentsList:
+            if 'dissuades_people_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment dissuades people from committing other heinous crimes'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('dissuades_people_argument')
+                return self.go_to_state('dissuades_people_argument1')
         elif 'eye for eye' in tags:
-            if 'eye_for_eye_argument' not in self.argumentsList:
+            if 'eye_for_eye_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is an eye for an eye type of thing'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('eye_for_eye_argument')
+                return self.go_to_state('eye_for_eye_argument1')
         elif 'cant contribute' in tags:
-            if 'cant_contribute_argument' not in self.argumentsList:
+            if 'cant_contribute_argument1' not in self.argumentsList:
                 self.discussedState = 'whether people can contribute to society if not sentenced to death'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('cant_contribute_argument')
+                return self.go_to_state('cant_contribute_argument1')
         elif 'deserves worst fate' in tags:
-            if 'deserves_worst_fate_argument' not in self.argumentsList:
+            if 'deserves_worst_fate_argument1' not in self.argumentsList:
                 self.discussedState = 'whether death is a worse fate for people than prison'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('deserves_worst_fate_argument')
+                return self.go_to_state('deserves_worst_fate_argument1')
         elif 'wont change' in tags:
-            if 'wont_change_argument' not in self.argumentsList:
+            if 'wont_change_argument1' not in self.argumentsList:
                 self.discussedState = 'whether people can change after committing such crimes'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('wont_change_argument')
+                return self.go_to_state('wont_change_argument1')
         else:
             self.gibberish_from = 'positive_convo_for_another_time'
             return self.go_to_state('gibberish')
@@ -719,54 +941,54 @@ class OxyCSBot(ChatBot):
         """
         #go through all possible reasons
         if 'cheaper' in tags:
-            if 'cheaper_argument' not in self.argumentsList:
+            if 'cheaper_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is cheaper'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('cheaper_argument')
+                return self.go_to_state('cheaper_argument1')
         elif 'humane' in tags:
-            if 'more_humane_argument' not in self.argumentsList:
+            if 'more_humane_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is more humane'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('more_humane_argument')
+                return self.go_to_state('more_humane_argument1')
         elif 'dissuade' in tags:
-            if 'dissuades_people_argument' not in self.argumentsList:
+            if 'dissuades_people_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment dissuades people from committing other heinous crimes'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('dissuades_people_argument')
+                return self.go_to_state('dissuades_people_argument1')
         elif 'eye for eye' in tags:
-            if 'eye_for_eye_argument' not in self.argumentsList:
+            if 'eye_for_eye_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is an eye for an eye type of thing'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('eye_for_eye_argument')
+                return self.go_to_state('eye_for_eye_argument1')
         elif 'cant contribute' in tags:
-            if 'cant_contribute_argument' not in self.argumentsList:
+            if 'cant_contribute_argument1' not in self.argumentsList:
                 self.discussedState = 'whether people can contribute to society if not sentenced to death'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('cant_contribute_argument')
+                return self.go_to_state('cant_contribute_argument1')
         elif 'deserves worst fate' in tags:
-            if 'deserves_worst_fate_argument' not in self.argumentsList:
+            if 'deserves_worst_fate_argument1' not in self.argumentsList:
                 self.discussedState = 'whether death is a worse fate for people than prison'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('deserves_worst_fate_argument')
+                return self.go_to_state('deserves_worst_fate_argument1')
         elif 'wont change' in tags:
-            if 'wont_change_argument' not in self.argumentsList:
+            if 'wont_change_argument1' not in self.argumentsList:
                 self.discussedState = 'whether people can change after committing such crimes'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('wont_change_argument')
+                return self.go_to_state('wont_change_argument1')
         else:
             self.gibberish_from = 'negative_convo_for_another_time'
             return self.go_to_state('gibberish')
@@ -788,54 +1010,54 @@ class OxyCSBot(ChatBot):
         """
         #go through all possible reasons
         if 'cheaper' in tags:
-            if 'cheaper_argument' not in self.argumentsList:
+            if 'cheaper_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is cheaper'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('cheaper_argument')
+                return self.go_to_state('cheaper_argument1')
         elif 'humane' in tags:
-            if 'more_humane_argument' not in self.argumentsList:
+            if 'more_humane_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is more humane'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('more_humane_argument')
+                return self.go_to_state('more_humane_argument1')
         elif 'dissuade' in tags:
-            if 'dissuades_people_argument' not in self.argumentsList:
+            if 'dissuades_people_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment dissuades people from committing other heinous crimes'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('dissuades_people_argument')
+                return self.go_to_state('dissuades_people_argument1')
         elif 'eye for eye' in tags:
-            if 'eye_for_eye_argument' not in self.argumentsList:
+            if 'eye_for_eye_argument1' not in self.argumentsList:
                 self.discussedState = 'whether capital punishment is an eye for an eye type of thing'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('eye_for_eye_argument')
+                return self.go_to_state('eye_for_eye_argument1')
         elif 'cant contribute' in tags:
-            if 'cant_contribute_argument' not in self.argumentsList:
+            if 'cant_contribute_argument1' not in self.argumentsList:
                 self.discussedState = 'whether people can contribute to society if not sentenced to death'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('cant_contribute_argument')
+                return self.go_to_state('cant_contribute_argument1')
         elif 'deserves worst fate' in tags:
-            if 'deserves_worst_fate_argument' not in self.argumentsList:
+            if 'deserves_worst_fate_argument1' not in self.argumentsList:
                 self.discussedState = 'whether death is a worse fate for people than prison'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('deserves_worst_fate_argument')
+                return self.go_to_state('deserves_worst_fate_argument1')
         elif 'wont change' in tags:
-            if 'wont_change_argument' not in self.argumentsList:
+            if 'wont_change_argument1' not in self.argumentsList:
                 self.discussedState = 'whether people can change after committing such crimes'
             #we've already argued this topic before!
                 return self.go_to_state('annoyed_convo_for_another_time')
             else:
-                return self.go_to_state('wont_change_argument')
+                return self.go_to_state('wont_change_argument1')
         else:
             self.gibberish_from = 'positive_convo_for_another_time'
             return self.go_to_state('gibberish')
@@ -864,4 +1086,4 @@ class OxyCSBot(ChatBot):
 
 
 if __name__ == '__main__':
-    OxyCSBot().chat()
+    CapPun().chat()

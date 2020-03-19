@@ -9,7 +9,7 @@ from flask import Flask
 from slack import WebClient
 from slackeventsapi import SlackEventAdapter
 
-from our_bot_expressive import OxyCSBot # FIXME replace with your chatbot class
+from our_bot_expressive import CapPun # FIXME replace with your chatbot class
 
 # initialize the Flask app
 app = Flask(__name__)
@@ -42,7 +42,7 @@ def message(payload):
 
     key = (user_id, channel_id)
     if key not in global_state['partners']:
-        global_state['partners'][key] = OxyCSBot() # FIXME replace with your chatbot class
+        global_state['partners'][key] = CapPun() # FIXME replace with your chatbot class
     chatbot = global_state['partners'][key]
     response = chatbot.respond(text)
 
