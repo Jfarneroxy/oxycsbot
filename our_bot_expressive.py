@@ -282,18 +282,26 @@ class CapPun(ChatBot):
         Returns:
             str: The message to send to the user.
         """
+        nextState = self.determineNextState(message, tags, 1, 999) #999 is random number, just wanted it not to increment disagreeCounter
+
         if 'greeting' in tags:
             return self.go_to_state('main_question')
         elif 'capital punishment' in tags or 'death penalty' in tags and 'hello' not in tags:
             message = message.replace('punishment','').replace('death','').replace('penalty','')
             if self.sentiment_analyzer_scores(message) == 'pos' or self.sentiment_analyzer_scores(message) == 'neu':
+                #if user mentions CP or death penalty and has valid point right off the bat, talk about it!
+                if nextState != 'confused':
+                    return self.go_to_state(nextState)
                 return self.go_to_state('disagree_main_question')
                 
             elif self.sentiment_analyzer_scores(message) == 'neg':
                 return self.finish('agree')
-        else:
+        elif nextState == 'confused':
             self.gibberish_from = 'main_question'
-            return self.go_to_state('gibberish') 
+            return self.go_to_state('gibberish')
+        #second go_to_state(nextState) exists if user doesnt mention CP or death penalty but still poses valid point
+        else:
+            return self.go_to_state(nextState)
 
     def on_enter_disagree_main_question(self):
         """Send a message when entering the "disagree_main_question" state."""
@@ -1086,7 +1094,7 @@ class CapPun(ChatBot):
         self.agreeCounter = 0
         self.disagreeCounter = 0
         
-        return "I don't think we really see eye to eye on this one. Let's pick this conversation up another time."
+        return "I don't think we really see eye to eye on this one. Let's pick this conversation up another time"
     
     def finish_gibberish(self):
         """Send a message and go to the default state."""
