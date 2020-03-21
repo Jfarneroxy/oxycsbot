@@ -1079,14 +1079,14 @@ class CapPun(ChatBot):
         self.agreeCounter = 0
         self.disagreeCounter = 0
         
-        return "Looks like we agree then. Yay!"
+        return "Great! Glad we see eye to eye on this, I look forward to more conversations with you!"
 
     def finish_disagree(self):
         """Send a message and go to the default state."""
         self.agreeCounter = 0
         self.disagreeCounter = 0
         
-        return "Agree to disagree, I'm done debating with you for now"
+        return "I don't think we really see eye to eye on this one. Let's pick this conversation up another time."
     
     def finish_gibberish(self):
         """Send a message and go to the default state."""
