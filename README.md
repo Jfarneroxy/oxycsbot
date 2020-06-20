@@ -1,3 +1,5 @@
+#The most updated version of this chatbot is included in the file 'our_bot_expressive.py'. The rest of this README describes how this bot can be connected to a heroku app for slack implementation. However, we ran into significant lag issues with the free version Heroku, making the bot unusable. The project is best run in an interpreter. 
+
 # OxyCSBot
 
 This is a demo/tutorial of how to build a Slack chatbot using the [Event API](https://api.slack.com/events-api), and also provides a framework for a tags-based chatbot.
